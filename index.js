@@ -18,6 +18,24 @@ function config() {
         timeout         : 60 * 60 * 1000
       }
     }
+//сlass`s desc
+class testClass{
+    name = "sdsdfdsfsf"
+    static login = 5
+    constructor(name){
+        console.log(name)
+        this.test()
+    }
+    test(){
+        console.log('!!!!!!!!!!!!' + this.name)
+    }
+    static test1(){
+        console.log('broooo')
+    }
+}
+console.log(testClass.login)
+let test = new testClass('hai')
+test.test()
 const mysqlConnect = mysql.createPool(config())
 /**The plan of an e-store
  * Basic requests:
@@ -40,10 +58,7 @@ const mysqlConnect = mysql.createPool(config())
 */
 //first plain route
 app.get('/', function(request, response){
-    //sending response from server
-    console.log(request.query.test)
     //decomposing get-params
-    const {test, text} = request.query
     response.send(
         `<h1>
             Nav
@@ -63,105 +78,10 @@ app.get('/', function(request, response){
         `
     )
 })
-app.get('/products', function(req, res) 
-    {
-        const query = "SELECT * FROM `goods`"
-        mysqlConnect.query(query, (err, result) =>
-            {
-                err ? 
-                    res.send(err) 
-                    : 
-                    res.send(JSON.stringify(result))
-            }
-        )
-    }
-)
-app.get("/product", function(req, res) 
-    {
-        const {item_id} = req.query
-        const query = "SELECT * FROM `goods` WHERE `ID`= " + item_id
-        mysqlConnect.query(query, (err, result) => 
-            {
-                err ?
-                res.send(err)
-                :
-                res.send(JSON.stringify(result))
-            }
-        )
-        
-    }
-)
-app.get("/productDel", function(req, res)
-    {
-        const {item_id} = req.query 
-        const query = "DELETE FROM `goods` WHERE `ID`=" + item_id.toString()
-        mysqlConnect.query(query, (err, result) => 
-            {
-                err ?
-                res.send(
-                    JSON.stringify(
-                        {
-                            "result" : false,
-                            "error" : err
-                        }
-                    )
-                )
-                :
-                res.send(
-                    JSON.stringify(
-                        {
-                            "result" : true
-                        }
-                    )
-                )
-            }
-        )
-    }
-)
-app.post("/productAdd", function(req, res)
-    {
-        console.log(req)
-        res.send('hey')
-    }
-)
-app.get('/productAdd_form', function(req, res)
-    {
-        res.send(
-            `
-                <form action="/productAdd" method="post">
-                    <input type="text" name="ID" />
-                    <input type="text" name="TITLE" />
-                    <input type="text" name="DISCR" />
-                    <input type="text" name="PRICE" />
-                    <input type="text" name="COUNT" />
-                    <input type="text" name="IMG" />
-                    <input type="submit" />
-                </form>
-            `
-        )
-    }
-)
-app.get("/productEdit_form", function(req, res)
-    {
-        res.send(
-            `
-                <form action="/productEdit" method="post">
-                    <input type="text" name="ID" />
-                    <input type="text" name="TITLE" />
-                    <input type="text" name="DISCR" />
-                    <input type="text" name="PRICE" />
-                    <input type="text" name="COUNT" />
-                    <input type="text" name="IMG" />
-                    <input type="submit" />
-                </form>
-            `
-        )
-    }
-)
-app.get("/productEdit", function(req, res)
-    {
-
-    }
-)
+require('./routes/products')(app, mysqlConnect)
+require('./routes/product')(app, mysqlConnect)
+require("./routes/productDel")(app, mysqlConnect)
+require('./routes/productAdd')(app, mysqlConnect)
+require('./routes/productEdit')(app, mysqlConnect)
 //listen to port
 app.listen(3000)
