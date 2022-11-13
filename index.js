@@ -18,24 +18,6 @@ function config() {
         timeout         : 60 * 60 * 1000
       }
     }
-//сlass`s desc
-class testClass{
-    name = "sdsdfdsfsf"
-    static login = 5
-    constructor(name){
-        console.log(name)
-        this.test()
-    }
-    test(){
-        console.log('!!!!!!!!!!!!' + this.name)
-    }
-    static test1(){
-        console.log('broooo')
-    }
-}
-console.log(testClass.login)
-let test = new testClass('hai')
-test.test()
 const mysqlConnect = mysql.createPool(config())
 /**The plan of an e-store
  * Basic requests:
@@ -74,14 +56,26 @@ app.get('/', function(request, response){
                 <a href="/productDel?item_id=1">Удалить первый товар</a>
             <li/>
                 <a href="/productEdit_form">Редактировать товар</a>
+            <li />
+                <a href="/addUser_form">Добавление пользователей</a>
         </ul>
         `
     )
 })
-require('./routes/products')(app, mysqlConnect)
-require('./routes/product')(app, mysqlConnect)
-require("./routes/productDel")(app, mysqlConnect)
-require('./routes/productAdd')(app, mysqlConnect)
-require('./routes/productEdit')(app, mysqlConnect)
+//routes for products
+require('./routes/products/products')(app, mysqlConnect)
+require('./routes/products/product')(app, mysqlConnect)
+require("./routes/products/productDel")(app, mysqlConnect)
+require('./routes/products/productAdd')(app, mysqlConnect)
+require('./routes/products/productEdit')(app, mysqlConnect)
+
+
+
+//routes for users
+require('./routes/users/addUser')(app, mysqlConnect)
+require('./routes/users/users')(app)
+require('./routes/users/userDel')(app, mysqlConnect)
+require('./routes/users/user')(app)
+
 //listen to port
 app.listen(3000)

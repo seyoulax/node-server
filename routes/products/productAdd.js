@@ -12,7 +12,6 @@ app.post("/productAdd", filetest, function(req, res)
                 const count = req.body.COUNT
                 const img = req.body.IMG
                 const query = "INSERT `goods`(`ID`, `TITLE`, `DISCR`, `PRICE`, `IMG`, `COUNT`) VALUES('" + id + "', '" + title + "', '" + desc + "', '" + price + "', '" + img + "', '" + count + "')"
-                console.log(query)
                 mysqlConnect.query(query, (err, result) => 
                     {
                         err ?
