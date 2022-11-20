@@ -1,13 +1,13 @@
 const multer = require('multer')
+const TableMasterProducts = require('../../services/tables-master/table-master-products')
 const upload = multer({dest : "uploads/"})
 const gainedfile = upload.single('MYFILE')
-
-module.exports = (app, mysqlConnect) => {
-    app.get("/productEdit_form", function(req, res)
+module.exports = (app) => {
+    app.get("/products/edit_form", function(req, res)
                 {
                     res.send(
                         `
-                            <form enctype="multipart/form-data" action="/productEdit" method="post">
+                            <form enctype="multipart/form-data" action="/products/edit" method="post">
                                 <input type="text" placeholder="id" name="ID" />
                                 <input type="text" placeholder="title" name="TITLE" />
                                 <input type="text" placeholder="desc" name="DESC" />
@@ -20,23 +20,19 @@ module.exports = (app, mysqlConnect) => {
                     )
                 }
             )
-    app.post("/productEdit", gainedfile, function(req, res)
+    app.post("/products/edit", gainedfile, function(req, res)
                 {
                     const {ID, TITLE, DESC, PRICE, IMG, COUNT} = req.body
-                    const query = "UPDATE `goods` SET `TITLE`='" + TITLE + "', `DISCR`='" + DESC + "', `PRICE` = '" + PRICE + "', `IMG` ='" + IMG + "', `COUNT`= '" + COUNT + "' WHERE `ID`= '" + ID + "'"
-                    mysqlConnect.query(query, (err, result) =>  
-                        {
-                            if(err){
-                                res.send(err)
-                            }else{
-                                if(result.affectedRows == 0){
-                                    res.send(JSON.stringify({"status" : "invlaid id", 'sended' : result}))
-                                }else{
-                                    res.send(JSON.stringify({'status' : 'OK', 'sended': result}))
-                                }
-                            }
-                        }
-                    )
+                    const data = {
+                        "ID" : ID,
+                        "TITLE" : TITLE,
+                        "DISCR" : DESC, 
+                        "PRICE" : PRICE,
+                        "IMG" : IMG,
+                        "COUNT" : COUNT
+                    }
+                    const table_master_products = new TableMasterProducts(res, req)
+                    table_master_products.update(data)
                 }
             )
 }

@@ -1,15 +1,8 @@
-module.exports = (app, mysqlConnect) => app.get("/product", function(req, res) 
+const TableMasterProducts = require("./../../services/tables-master/table-master-products")
+module.exports = (app) => app.get("/products/get/:item_id", function(req, res) 
     {
         const {item_id} = req.query
-        const query = "SELECT * FROM `goods` WHERE `ID`= " + item_id
-        mysqlConnect.query(query, (err, result) => 
-            {
-                err ?
-                res.send(err)
-                :
-                res.send(JSON.stringify(result))
-            }
-        )
-        
+        const table_master_products = new TableMasterProducts(res, req)
+        table_master_products.getOne(item_id)
     }
 )

@@ -3,7 +3,7 @@ const upload = multer({dest: 'uploads/'});
 const filetest = upload.single('MYFILE');
 const uuid = require("uuid");
 const TablesMasterUsers = require('../../services/tables-master/table-master-users')
-module.exports = (app, mysqlConnect) => {
+module.exports = (app) => {
     app.post("/users/add", filetest, function(req, res)
         {
             const data = {

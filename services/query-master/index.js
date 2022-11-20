@@ -18,29 +18,24 @@ module.exports =  class QueryMaster{
     }
     #connect = mysql.createPool(this.#config)
     
-    getAll(){
-        const query = `SELECT * FROM ${this.table_name}`
+    query(query){
         this.#connect.query(query, (err, result) => 
             {
                 err ? 
-                        this.res.send(JSON.stringify({status: false, ERROR: err}))
-                :
-                        this.res.send(JSON.stringify({status: true, result: result}))
-                
+                this.res.send(JSON.stringify({status: false, ERROR: err}))
+            :
+                this.res.send(JSON.stringify({status: true, result: result}))
             }
-        )
+        )       
+    }
+
+    getAll(){
+        const query = `SELECT * FROM ${this.table_name}`
+        this.query(query)
     }
     getOne(u_id){
         const query = `SELECT * FROM ${this.table_name} WHERE ID = '${u_id}'`
-        this.#connect.query(query, (err, result) => 
-            {
-                err ? 
-                    this.res.send(JSON.stringify({status: false, ERROR: err}))
-                :
-                    this.res.send(JSON.stringify({status: true, result: result}))
-        
-            }
-        )
+        this.query(query)
     }
     addOne(data){
         let query = "INSERT INTO `" + this.table_name + "` ("
@@ -60,14 +55,27 @@ module.exports =  class QueryMaster{
         }
         fieldsQ += ")"
         query += fieldsQ + valuesQ + ")"
-        console.log(query)
-        this.#connect.query(query, (err, result) => 
-            {
-                err ? 
-                this.res.send(JSON.stringify({status: false, ERROR: err}))
-            :
-                this.res.send(JSON.stringify({status: true, result: result}))
+        this.query(query)           
+    }
+    update(data){
+        let query = "UPDATE `" + this.table_name + "` SET"
+        let setQ = ""
+        let n = 0
+        let data_length = Object.keys(data).length
+        for(const field in data){
+            n++;
+            if(n == data_length){
+                setQ += " `" + field + "` = '" + data[field] + "' WHERE `ID` = '" + data['ID'] + "'"
+            } else{
+                setQ += " `" + field + "` = '" + data[field] + "',"
             }
-        )                   
+        }
+        query += setQ
+        console.log(query)
+        this.query(query)    
+    }
+    delete(id){
+        let query = `DELETE FROM ${this.table_name} WHERE ID = ${id}` 
+        this.query(query)
     }
 }

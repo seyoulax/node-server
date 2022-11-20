@@ -1,27 +1,11 @@
-module.exports = (app, mysqlConnect) => app.get("/productDel", function(req, res)
-    {
-        const {item_id} = req.query 
-        const query = "DELETE FROM `goods` WHERE `ID`=" + item_id.toString()
-        mysqlConnect.query(query, (err, result) => 
-            {
-                err ?
-                res.send(
-                    JSON.stringify(
-                        {
-                            "result" : false,
-                            "error" : err
-                        }
-                    )
-                )
-                :
-                res.send(
-                    JSON.stringify(
-                        {
-                            "result" : true
-                        }
-                    )
-                )
-            }
-        )
-    }
-)
+const TableMasterProducts = require("../../services/tables-master/table-master-users")
+module.exports = (app, mysqlConnect) => 
+{
+    app.get("/products/del/:item_id", function(req, res)
+        {
+            const {item_id} = req.params
+            const tables_master_products = new TableMasterProducts(res, req)
+            tables_master_products.delete(item_id)
+        }
+    )
+}

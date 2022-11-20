@@ -1,17 +1,11 @@
+const TableMasterUsers = require("../../services/tables-master/table-master-users")
 module.exports = (app, mysqlConnect) => 
 {
-    app.get("/userDel", function(req, res)
+    app.get("/users/del/:user_id", function(req, res)
         {
-            const {user_id} = req.query
-            const query = "DELETE FROM `users` WHERE `ID` = " + "'" + user_id + "'"
-            mysqlConnect.query(query, (err, result) => 
-                {
-                    err ?
-                        res.send(err) 
-                    : 
-                        res.send('status: OK')
-                }
-            )
+            const {user_id} = req.params
+            const tables_master_users = new TableMasterUsers(res, req)
+            tables_master_users.delete(user_id)
         }
     )
 }
