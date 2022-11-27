@@ -1,9 +1,11 @@
 //importing plugins
 const { response } = require('express');
 const express = require('express');
-const mysql = require('mysql');
 //initializating application express
 const app = express();
+//importing filemaster
+const fileMaster = require('./services/file-master')
+const fs = require('fs')
 //creating connection to db
 function config() {
       return {
@@ -18,10 +20,9 @@ function config() {
         timeout         : 60 * 60 * 1000
       }
     }
-const mysqlConnect = mysql.createPool(config())
 /**The plan of an e-store
  * Basic requests:
- * - Gain user`s data by pass and login
+ * - Gain user`s data by password and login
  * - Gain goods data
  * - Gain good data
  * Basic request for admin`s interface:
@@ -59,7 +60,7 @@ app.get('/', function(request, response){
                 <li/>
                     <a href="/products/edit_form">Редактировать товар</a>
             </article>
-            <article>
+            <article style="margin-bottom: 20px">
                 <h2>Пользователи</h2>
                 <li />
                     <a href="/users/get">Посмотреть всех пользователей</a>
@@ -72,25 +73,45 @@ app.get('/', function(request, response){
                 <li />
                     <a href="/users/del/1">Удалить первого пользователя</a>
             </article>
+            <article style="margin-bottom: 20px">
+                <h2>Отзывы</h2>
+                <li />
+                    <a href="/reviews/get">Посмотреть все отзывы</a>
+                <li />
+                    <a href="/reviews/get/1">Посмотреть первый отзыв</a>
+                <li />
+                    <a href="/reviews/add_form">Добавление отзыва</a>
+                <li />
+                    <a href="/reviews/edit_form">Редактирование отзыва</a>
+                <li />
+                    <a href="/reviews/del/1">Удалить первый отзыв</a>
+            </article>
+            <article>
+            <h2>Файлы</h2>
+            <li />
+                <a href="/files/add_form">Записать файл</a>
+            <li />
+                <a href="/files/del_form">Удалить file</a>
+            </article>
+            <article>
+                <h2>Почта</h2>
+                <li />
+                    <a href="/mail/send_form">Отправить письмо</a>
+            </article>
         </ul>
         `
     )
 })
-//routes for products
-require('./routes/products/products')(app)
-require('./routes/products/product')(app)
-require("./routes/products/productDel")(app)
-require('./routes/products/productAdd')(app)
-require('./routes/products/productEdit')(app)
-
-
-
-//routes for users
-require('./routes/users/addUser')(app)
-require('./routes/users/users')(app)
-require('./routes/users/userDel')(app)
-require('./routes/users/user')(app)
-require('./routes/users/userEdit')(app)
-
+//working with files(FS)
+const MAIN_DIR = 'routes'
+const folders = fs.readdirSync(`./${MAIN_DIR}`)
+folders.map( folderName =>{
+    const FolderArray = fs.readdirSync(`./${MAIN_DIR}/${folderName}`)
+    FolderArray.map( fileName =>
+     {
+        require(`./${MAIN_DIR}/${folderName}/${fileName}`)(app)
+     }
+    )
+})
 //listen to port
 app.listen(3000)
